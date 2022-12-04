@@ -1,5 +1,5 @@
 FROM alpine:latest
 
 RUN apk update \
-    && apk add --no-cache nodejs npm \
+    && apk add --no-cache nodejs npm git \
     && npm i -g typescript
