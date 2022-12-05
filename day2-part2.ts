@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import { getInputData } from './helpers';
 
 const resultMatrix: { [key: string]: { [key: string]: number } } = {
     'A': {
@@ -18,9 +18,9 @@ const resultMatrix: { [key: string]: { [key: string]: number } } = {
     }
 }
 
-const inputDatat = fs.readFileSync('day2-input.txt', { encoding: 'utf-8' });
+const inputDatat = getInputData();
 let totalScore = 0;
-inputDatat.split('\n').forEach(l => {
+inputDatat.forEach(l => {
     let tokens = l.split(' ');
     totalScore += resultMatrix[tokens[0]][tokens[1]];
 });

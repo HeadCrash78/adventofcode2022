@@ -1,9 +1,9 @@
-import * as fs from 'fs';
+import { getInputData } from './helpers';
 
-const inputData = fs.readFileSync('day4-input.txt', { encoding: 'utf-8' });
+const inputData = getInputData();
 let fullyContained = 0;
 let overlap = 0;
-inputData.split('\n').forEach(line => {
+inputData.forEach(line => {
     let tokens = line.split(/[-,]/);
     let e1Start = Number(tokens[0]);
     let e1End = Number(tokens[1]);

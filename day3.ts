@@ -1,10 +1,10 @@
-import * as fs from 'fs';
+import { getInputData } from './helpers';
 
-const inputData = fs.readFileSync('day3-input.txt', { encoding: 'utf-8' });
+const inputData = getInputData();
 let sumOfPrios = 0;
 let sumOfBadgePrios = 0;
 let group: string[] = [];
-inputData.split('\n').forEach(line => {
+inputData.forEach(line => {
     group.push(line);
     let firstComp = line.substring(0,line.length / 2);
     let secondCompRegex = new RegExp(`[${line.substring(line.length / 2)}]`);

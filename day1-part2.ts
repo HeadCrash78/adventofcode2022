@@ -1,12 +1,12 @@
-import * as fs from 'fs';
+import { getInputData } from './helpers';
 
-const inputData = fs.readFileSync('day1-input.txt', { encoding: 'utf-8' });
+const inputData = getInputData();
 let elves: {key: number, calories: number}[] = [];
 let elveIndex = 1;
 let totalCalories = 0;
 if (inputData.length > 0) {
     let calories = 0;
-    inputData.split('\n').forEach((l: string) => {
+    inputData.forEach((l: string) => {
         if (l.length == 0) {
             elves.push({key: elveIndex++, calories: calories});
             calories = 0;
