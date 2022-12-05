@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rm -rf dist",
+    "build": "tsc",
+    "start": "node dist/common/starter.js"
   },
   "repository": {
     "type": "git",

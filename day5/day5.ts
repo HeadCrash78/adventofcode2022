@@ -1,4 +1,4 @@
-import { getInputData } from "./helpers";
+import { getInputData } from "../common/helpers";
 
 function buildStacks(stackInfo: string[]): string[][] {
     const noOfStacks = stackInfo.pop()!.trim().split(/\s+/).length;
