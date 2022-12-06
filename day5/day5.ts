@@ -1,4 +1,4 @@
-import { getInputData } from "../common/helpers";
+import { getInputDataLines } from "../common/helpers";
 
 function buildStacks(stackInfo: string[]): string[][] {
     const noOfStacks = stackInfo.pop()!.trim().split(/\s+/).length;
@@ -34,7 +34,7 @@ let stackInfo: string[] = [];
 let stacks: string[][] = [];
 let stacks2: string[][] = [];
 let match: RegExpMatchArray | null;
-const inputData = getInputData();
+const inputData = getInputDataLines();
 inputData.forEach(line => {
     if (line.length == 0) {
         stacks = buildStacks(stackInfo);

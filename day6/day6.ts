@@ -1,6 +1,6 @@
-import { getInputData } from '../common/helpers';
+import { getInputDataAsString } from '../common/helpers';
 
-const inputData = getInputData()[0];
+const inputData = getInputDataAsString();
 const startOfPacketMarkerLength = 4;
 let startOfPacketMarkerIndex = 0;
 const startOfMessageMarkerLength = 14;

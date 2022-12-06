@@ -1,4 +1,4 @@
-import { getInputData } from '../common/helpers';
+import { getInputDataLines } from '../common/helpers';
 
 const choiceScore: { [key: string]: number } = {
     'X': 1,
@@ -45,10 +45,10 @@ const resultMatrixPart2: { [key: string]: { [key: string]: number } } = {
     }
 }
 
-const inputDatat = getInputData();
+const inputData = getInputDataLines();
 let totalScore = 0;
 let totalScorePart2 = 0;
-inputDatat.forEach(l => {
+inputData.forEach(l => {
     let tokens = l.split(' ');
     totalScore += choiceScore[tokens[1]] + roundScore[resultMatrix[tokens[0]][tokens[1]]];
     totalScorePart2 += resultMatrixPart2[tokens[0]][tokens[1]];

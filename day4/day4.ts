@@ -1,6 +1,6 @@
-import { getInputData } from '../common/helpers';
+import { getInputDataLines } from '../common/helpers';
 
-const inputData = getInputData();
+const inputData = getInputDataLines();
 let fullyContained = 0;
 let overlap = 0;
 inputData.forEach(line => {

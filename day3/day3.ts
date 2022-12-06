@@ -1,11 +1,11 @@
-import { getInputData } from '../common/helpers';
+import { getInputDataLines } from '../common/helpers';
 
 function getItemPrio(item: string): number {
     let charCode = item.charCodeAt(0);
     return charCode >= 97 ? charCode - 96 : charCode - 38;
 }
 
-const inputData = getInputData();
+const inputData = getInputDataLines();
 let sumOfPrios = 0;
 let sumOfBadgePrios = 0;
 let group: string[] = [];
