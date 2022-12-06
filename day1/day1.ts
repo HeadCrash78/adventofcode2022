@@ -19,6 +19,6 @@ if (inputData.length > 0) {
 let topThreeElves = elves.sort((a,b) => b.calories - a.calories).slice(0,3);
 let totalTopThreeCalories = 0;
 topThreeElves.forEach(e => { totalTopThreeCalories += e.calories });
-console.log(`There are ${elves.length} carrying ${totalCalories} total calories.`);
+console.log(`There are ${elves.length} elves carrying ${totalCalories} total calories.`);
 console.log(`Elve no. ${topThreeElves[0].key} with ${topThreeElves[0].calories} carries the most.`);
 console.log(`Elves no. ${topThreeElves.map(e => e.key).join(', ')} with ${totalTopThreeCalories} carry the most.`);
