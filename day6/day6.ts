@@ -7,15 +7,15 @@ const startOfMessageMarkerLength = 14;
 let startOfMessageMarkerIndex = 0;
 let index = 0;
 let lastUniqueIndex = 0;
-while (index < inputData.length) {
+while ((!startOfPacketMarkerIndex || !startOfMessageMarkerIndex) && index < inputData.length) {
     let position = inputData.indexOf(inputData[index], lastUniqueIndex);
     if (position > -1 && position < index) {
         lastUniqueIndex = position + 1;
     }
-    if (index - lastUniqueIndex + 1 == startOfPacketMarkerLength && startOfPacketMarkerIndex == 0) {
+    if (!startOfPacketMarkerIndex && index - lastUniqueIndex + 1 == startOfPacketMarkerLength) {
         startOfPacketMarkerIndex = index;
     }
-    if (index - lastUniqueIndex + 1 == startOfMessageMarkerLength && startOfMessageMarkerIndex == 0) {
+    if (!startOfMessageMarkerIndex && index - lastUniqueIndex + 1 == startOfMessageMarkerLength) {
         startOfMessageMarkerIndex = index;
     }
     ++index;
