@@ -14,5 +14,5 @@ inputData.forEach(line => {
         || e2Start < e1Start && e1End < e2End ? 1 : 0;
     overlap += Math.max(e1Start, e2Start) <= Math.min(e1End, e2End) ? 1 : 0;
 });
-console.log(`There are ${fullyContained} fully contained segments`);
-console.log(`There are ${overlap} overlapping segments overlap`);
+console.log(`There are ${fullyContained} fully contained segments.`);
+console.log(`There are ${overlap} overlapping segments.`);

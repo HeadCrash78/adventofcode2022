@@ -47,5 +47,5 @@ inputData.forEach(line => {
         moveAll(stacks2, Number(match!.groups!.count), Number(match!.groups!.from) - 1, Number(match!.groups!.to) - 1);
     }
 });
-console.log(`The result when moving each crate is ${stacks.map(s => s[s.length - 1]).join('')}`);
-console.log(`The result when moving all crates at once is ${stacks2.map(s => s[s.length - 1]).join('')}`);
+console.log(`The result when moving each crate is ${stacks.map(s => s[s.length - 1]).join('')}.`);
+console.log(`The result when moving all crates at once is ${stacks2.map(s => s[s.length - 1]).join('')}.`);

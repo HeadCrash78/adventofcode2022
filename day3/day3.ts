@@ -19,5 +19,5 @@ inputData.forEach(line => {
         group = [];
     }
 });
-console.log(`The sum of the items priorities is ${sumOfPrios}`);
-console.log(`The sum of the badge priorities is ${sumOfBadgePrios}`);
+console.log(`The sum of the item priorities is ${sumOfPrios}.`);
+console.log(`The sum of the badge priorities is ${sumOfBadgePrios}.`);

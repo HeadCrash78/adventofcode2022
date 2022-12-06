@@ -53,5 +53,5 @@ inputDatat.forEach(l => {
     totalScore += choiceScore[tokens[1]] + roundScore[resultMatrix[tokens[0]][tokens[1]]];
     totalScorePart2 += resultMatrixPart2[tokens[0]][tokens[1]];
 });
-console.log(`The total score in part 1 would be ${totalScore}`);
-console.log(`The total score in part 2 would be ${totalScorePart2}`);
+console.log(`The total score in part 1 would be ${totalScore}.`);
+console.log(`The total score in part 2 would be ${totalScorePart2}.`);
