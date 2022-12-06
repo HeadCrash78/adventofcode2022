@@ -6,6 +6,11 @@
 		"dockerfile": "Dockerfile"
 	},
 
+	"extensions": [
+		"eamodio.gitlens",
+		"mhutchie.git-graph"
+	],
+
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
