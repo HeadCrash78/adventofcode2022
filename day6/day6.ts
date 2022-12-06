@@ -1,4 +1,3 @@
-import { count } from 'console';
 import { getInputData } from '../common/helpers';
 
 const inputData = getInputData()[0];
