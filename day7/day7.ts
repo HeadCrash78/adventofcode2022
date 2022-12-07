@@ -122,7 +122,6 @@ function findSmallestDirLargerThan(dir: Directory, minSize: number): Directory |
 }
 
 function getFullDirName(dir: Directory): string {
-    let path = '';
     if (dir.parentDir) {
         return `${getFullDirName(dir.parentDir)}/${dir.name}`;
     }
