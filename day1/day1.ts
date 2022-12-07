@@ -4,7 +4,7 @@ const inputData = getInputDataAsString();
 let elves: {key: number, calories: number}[] = [];
 inputData.split('\n\n').map((val, idx) => {
     elves.push({ key: idx + 1,
-        calories: Number(val.split('\n').reduce((total, val) => String(Number(total) + Number(val)))) });
+        calories: val.split('\n').reduce<number>((total, val) => total + Number(val), 0) });
 })
 
 let topThreeElves = elves.sort((a,b) => b.calories - a.calories).slice(0,3);
