@@ -27,7 +27,7 @@ function populateSubTreeSizes(dir: Directory): number {
 function buildFileSystem(lines: string[]): Directory {
     let rootDir: Directory = {
         parentDir: undefined,
-        name: '/',
+        name: '',
         sizeOfSubTree: 0,
         fileSizeTotal: 0,
         dirs: undefined,
@@ -125,7 +125,7 @@ function getFullDirName(dir: Directory): string {
     if (dir.parentDir) {
         return `${getFullDirName(dir.parentDir)}/${dir.name}`;
     }
-    return '';
+    return dir.name;
 }
 
 const inputData = getInputDataLines();
