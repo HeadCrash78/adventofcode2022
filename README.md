@@ -8,4 +8,6 @@ Once your development container is running (or your machine is set up), run `npm
 
 To run a puzzle, simply run `npm start {day}` (e.g., `npm start day5`).
 
+Some puzzles support verbose output (e.g., the rope puzzle from day 9). To see verbose output, add the argument `verbose` when you run the puzzle (e.g., `npm start day9 verbose`);
+
 Have fun! :metal:
