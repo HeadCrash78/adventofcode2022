@@ -6,6 +6,7 @@ export function getInputDataLines(): string[] {
 }
 
 export function getInputDataAsString(): string {
-    let day: string = process.argv[2];
-    return fs.readFileSync(path.join(day, 'input.txt'), { encoding: 'utf-8' });
+    let scriptFileName = path.basename(process.argv[1]);
+    scriptFileName = scriptFileName.substring(0,scriptFileName.length - 3);
+    return fs.readFileSync(path.join(scriptFileName, 'input.txt'), { encoding: 'utf-8' });
 }

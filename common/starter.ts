@@ -4,7 +4,7 @@ import path from "path";
 const day = process.argv[2];
 const puzzle = path.join('dist', day, `${day}.js`);
 
-exec(`node ${puzzle} ${day} ${process.argv.slice(3).join(' ')}`, (ex, out, err) => {
+exec(`node ${puzzle} ${process.argv.slice(3).join(' ')}`, (ex, out, err) => {
     if (out) {
         console.log(out);
     }
