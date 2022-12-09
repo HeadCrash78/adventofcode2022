@@ -1,121 +1,144 @@
-import { exit } from 'process';
 import { getInputDataLines } from '../common/helpers';
 
-interface Position {
-    x: number,
-    y: number
+class Grid {
+    grid: any[][];
+
+    constructor(height: number, width: number) {
+        this.grid = new Array(height).fill(0).map(_ => new Array(width).fill('.'));
+    }
+
+    public get height(): number {
+        return this.grid.length;
+    }
+
+    public get width(): number {
+        return this.grid[0].length;
+    }
+
+    public clone(): Grid {
+        return new Grid(this.grid.length, this.grid[0].length);
+    }
+
+    public visit(pos: Position, marker: any = '#') {
+        this.grid[pos.y][pos.x] = marker;
+    }
+
+    public getVisitedPositionCount(marker: any = '#'): number {
+        return this.grid.reduce<number>((c, row) => c += row.reduce<number>((c, pos) => c += pos == marker ? 1 : 0, 0), 0);
+    }
+}
+class Position {
+    x: number;
+    y: number;
+
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public clone(): Position {
+        return new Position(this.x, this.y);
+    }
+
+    public moveBy(pos: Position, times: number = 1) {
+        this.x += pos.x * times;
+        this.y += pos.y * times;
+    }
+
+    public minimize(pos: Position) {
+        this.x = Math.min(this.x, pos.x);
+        this.y = Math.min(this.y, pos.y);
+    }
+
+    public maximize(pos: Position) {
+        this.x = Math.max(this.x, pos.x);
+        this.y = Math.max(this.y, pos.y);
+    }
+
+    public abs(): Position {
+        this.x = Math.abs(this.x);
+        this.y = Math.abs(this.y);
+        return this;
+    }
+
+    private snapDistance(pos: Position): Position {
+        let x: number = 0, y: number = 0;
+        let dx = this.x - pos.x;
+        let dy = this.y - pos.y;
+        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+            x = dx < 0 ? 1 : dx > 0 ? -1 : 0;
+            y = dy < 0 ? 1 : dy > 0 ? -1 : 0;
+        }
+        return new Position(x, y);
+    }
+
+    public snapTo(pos: Position) {
+        this.moveBy(this.snapDistance(pos));
+    }
 }
 
-function createGridAndStartPosition(inputData: string[]): { start: Position, grid: number[][] } {
-    let x = 0, minX = 0, maxX = 0, y = 0, minY = 0, maxY = 0;
+const moves: { [key: string]: Position } = {
+    'L': new Position(-1, 0),
+    'U': new Position(0, -1),
+    'R': new Position(1, 0),
+    'D': new Position(0, 1)
+};
+
+function createGridAndStartPosition(inputData: string[]): { start: Position, grid: Grid } {
+    let pos = new Position(0, 0), minPos = new Position(0, 0), maxPos = new Position(0, 0);
     inputData.forEach(line => {
         let tokens = line.split(/\s+/);
-        switch (tokens[0]) {
-            case 'L':
-                x -= Number(tokens[1]);
-                break;
-            case 'R':
-                x += Number(tokens[1]);
-                break;
-            case 'U':
-                y -= Number(tokens[1]);
-                break;
-            case 'D':
-                y += Number(tokens[1]);
-                break;
-            default:
-                console.log('ERROR: Invalid input data!');
-                exit(1);
-        }
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
-        minY = Math.min(minY, y);
-        maxY = Math.max(maxY, y);
+        pos.moveBy(moves[tokens[0]], Number(tokens[1]));
+        minPos.minimize(pos);
+        maxPos.maximize(pos);
     });
 
-    let sizeX = Math.abs(Math.min(0, minX)) + Math.max(0, maxX) + 1;
-    let sizeY = Math.abs(Math.min(0, minY)) + Math.max(0, maxY) + 1;
-    return { start: { x: Math.abs(minX), y: Math.abs(minY) }, grid: new Array(sizeY).fill(0).map(_ => new Array(sizeX).fill(0))};
+    let sizeX = Math.abs(Math.min(0, minPos.x)) + Math.max(0, maxPos.x) + 1;
+    let sizeY = Math.abs(Math.min(0, minPos.y)) + Math.max(0, maxPos.y) + 1;
+    return { start: minPos.abs(), grid: new Grid(sizeY, sizeX)};
 }
 
 function fixTailPositions(head: Position, tails: Position[]) {
     for (let tailIndex = 0; tailIndex < tails.length; ++tailIndex) {
         let compareKnot = tailIndex == 0 ? head : tails[tailIndex - 1];
-        if (Math.abs(compareKnot.x - tails[tailIndex].x) > 1) {
-            tails[tailIndex].x += compareKnot.x < tails[tailIndex].x ? -1 : 1;
-            if (compareKnot.y != tails[tailIndex].y) {
-                tails[tailIndex].y += compareKnot.y < tails[tailIndex].y ? -1 : 1;
-            }
-        }
-        if (Math.abs(compareKnot.y - tails[tailIndex].y) > 1) {
-            tails[tailIndex].y += compareKnot.y < tails[tailIndex].y ? -1 : 1;
-            if (compareKnot.x != tails[tailIndex].x) {
-                tails[tailIndex].x += compareKnot.x < tails[tailIndex].x ? -1 : 1;
-            }
-        }
+        tails[tailIndex].snapTo(compareKnot);
     }
 }
 
-function executeMoves(inputData: string[], start: Position, tailNumber: number, grid: number[][]) {
-    let head = start, tails: Position[] = new Array(tailNumber).fill(0).map(_ => JSON.parse(JSON.stringify(start)));
+function executeMoves(inputData: string[], start: Position, tailNumber: number, grid: Grid) {
+    let head = start, tails: Position[] = new Array(tailNumber).fill(0).map(_ => start.clone());
     inputData.forEach(line => {
         let tokens = line.split(/\s+/);
+        let move = moves[tokens[0]];
         let distance = Number(tokens[1])
-        switch (tokens[0]) {
-            case 'L':
-                while (distance-- > 0) {
-                    --head.x;
-                    fixTailPositions(head, tails);
-                    grid[tails[tailNumber - 1].y][tails[tailNumber - 1].x] = 1;
-                }
-                break;
-            case 'R':
-                while (distance-- > 0) {
-                    ++head.x;
-                    fixTailPositions(head, tails);
-                    grid[tails[tailNumber - 1].y][tails[tailNumber - 1].x] = 1;
-                }
-                break;
-            case 'U':
-                while (distance-- > 0) {
-                    --head.y;
-                    fixTailPositions(head, tails);
-                    grid[tails[tailNumber - 1].y][tails[tailNumber - 1].x] = 1;
-                }
-                break;
-            case 'D':
-                while (distance-- > 0) {
-                    ++head.y;
-                    fixTailPositions(head, tails);
-                    grid[tails[tailNumber - 1].y][tails[tailNumber - 1].x] = 1;
-                }
-                break;
+        while (distance-- > 0) {
+            head.moveBy(move);
+            fixTailPositions(head, tails);
+            grid.visit(tails[tailNumber - 1]);
         }
     });
 }
 
-function printGrid(grid: number[][]) {
-    if (process.argv[3] == 'verbose') {
-        grid.forEach(row => console.log(row.map(n => n ? '#' : '.').join('')));
+function printGrid(grid: Grid) {
+    if (process.argv[2] == 'verbose') {
+        grid.grid.forEach(row => console.log(row.join('')));
         console.log();
     }
 }
 
 const inputData = getInputDataLines();
 let startInfo = createGridAndStartPosition(inputData);
-console.log(`The grid is ${startInfo.grid[0].length}x${startInfo.grid.length} fields with starting point (${startInfo.start.x},${startInfo.start.y}).`);
+console.log(`The grid is ${startInfo.grid.width}x${startInfo.grid.height} fields with starting point (${startInfo.start.x},${startInfo.start.y}).`);
 
 let part1Grid = startInfo.grid;
 let part1Start = startInfo.start;
-let part2Grid: number[][] = JSON.parse(JSON.stringify(startInfo.grid));
-let part2Start = JSON.parse(JSON.stringify(startInfo.start));
+let part2Grid = startInfo.grid.clone();
+let part2Start = startInfo.start.clone();
 
 executeMoves(inputData, part1Start, 1, part1Grid);
 printGrid(part1Grid);
-let visitedPositions = part1Grid.reduce<number>((c, row) => c += row.reduce((c, val) => c += val, 0), 0);
-console.log(`The tail visited ${visitedPositions} positions.`);
+console.log(`The tail visited ${part1Grid.getVisitedPositionCount()} positions.`);
 
 executeMoves(inputData, part2Start, 9, part2Grid);
 printGrid(part2Grid);
-visitedPositions = part2Grid.reduce<number>((c, row) => c += row.reduce((c, val) => c += val, 0), 0);
-console.log(`The last tail visited ${visitedPositions} positions.`);
+console.log(`The last tail visited ${part2Grid.getVisitedPositionCount()} positions.`);
