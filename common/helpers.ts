@@ -10,3 +10,7 @@ export function getInputDataAsString(): string {
     scriptFileName = scriptFileName.substring(0,scriptFileName.length - 3);
     return fs.readFileSync(path.join(scriptFileName, 'input.txt'), { encoding: 'utf-8' });
 }
+
+export function isVerbose(): boolean {
+    return process.argv[2] == 'verbose';
+}

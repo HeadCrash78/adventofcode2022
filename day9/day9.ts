@@ -1,4 +1,4 @@
-import { getInputDataLines } from '../common/helpers';
+import { getInputDataLines, isVerbose } from '../common/helpers';
 
 class Grid {
     grid: any[][];
@@ -120,7 +120,7 @@ function executeMoves(inputData: string[], start: Position, tailNumber: number, 
 }
 
 function printGrid(grid: Grid) {
-    if (process.argv[2] == 'verbose') {
+    if (isVerbose()) {
         grid.grid.forEach(row => console.log(row.join('')));
         console.log();
     }
