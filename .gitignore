@@ -351,3 +351,6 @@ MigrationBackup/
 
 # TSC output directory
 dist/
+
+# Output files
+output*.txt

@@ -13,5 +13,6 @@ Some puzzles support verbose output (e.g., the rope puzzle from day 9). To see v
 The following puzzles support verbose output:
 - day9
 - day12
+- day13
 
 Have fun! :metal:
