@@ -74,7 +74,7 @@ function drawRock(cave: string[][], lines: Position[][], xOffset: number) {
     });
 }
 
-function buildCave(inputData: string[], withFloor: boolean = false): string[][] {
+function buildCave(inputData: string[], withFloor: boolean = false): { cave: string[][], sandSource: Position } {
     let lines: Position[][] = [];
     let minCoordinate: Position = new Position(Number.MAX_VALUE, 0);
     let maxCoordinate: Position = new Position(0, 0);
@@ -93,8 +93,8 @@ function buildCave(inputData: string[], withFloor: boolean = false): string[][] 
     let cave: string[][];
     // We're adding 3 instead of 1 to get cave edges where sand can fall down
     let caveWidth = maxCoordinate.x - minCoordinate.x + 3;
-    // Offset (global variable) needs to include the left edge as well
-    xOffset = minCoordinate.x - 1;
+    // Offset needs to include the left edge as well
+    let xOffset = minCoordinate.x - 1;
     if (withFloor) {
         // The floor is always two levels lower than the lowest rock formation
         lines.push([new Position(0 + xOffset, maxCoordinate.y + 2), new Position(caveWidth - 1 + xOffset, maxCoordinate.y + 2)]);
@@ -104,8 +104,10 @@ function buildCave(inputData: string[], withFloor: boolean = false): string[][] 
         cave = new Array(maxCoordinate.y + 4).fill(0).map(_ => new Array(caveWidth).fill(symbols.air));
     }
     drawRock(cave!, lines, xOffset);
+    let sandSource = new Position(500 - xOffset, 0);
+    cave[sandSource.y][sandSource.x] = symbols.sandSource;
 
-    return cave!;
+    return { cave: cave!, sandSource: sandSource };
 }
 
 function extendCaveLeft(cave: string[][]) {
@@ -186,20 +188,16 @@ function drawCave(cave: string[][]) {
 }
 
 const inputData = getInputDataLines();
-let xOffset = 0;
-let cave = buildCave(inputData);
-let sandSource = new Position(500 - xOffset, 0);
-cave[sandSource.y][sandSource.x] = symbols.sandSource;
-pourSand(cave, sandSource);
-drawCave(cave);
-let restingSandGrains = cave.reduce<number>((c, l) => c += l.reduce<number>((c, v) => c += v == symbols.restingSand ? 1 : 0, 0), 0)
+let buildResult = buildCave(inputData);
+pourSand(buildResult.cave, buildResult.sandSource);
+drawCave(buildResult.cave);
+let restingSandGrains = buildResult.cave.reduce<number>((c, l) => c += l.reduce<number>((c, v) => c += v == symbols.restingSand ? 1 : 0, 0), 0)
 console.log(`There are ${restingSandGrains} units of resting sand.`);
 
 // Part 2
-cave = buildCave(inputData, true);
-cave[sandSource.y][sandSource.x] = symbols.sandSource;
-pourSand(cave, sandSource, true);
-drawCave(cave);
-restingSandGrains = cave.reduce<number>((c, l) => c += l.reduce<number>((c, v) => c += v == symbols.restingSand ? 1 : 0, 0), 0)
+buildResult = buildCave(inputData, true);
+pourSand(buildResult.cave, buildResult.sandSource, true);
+drawCave(buildResult.cave);
+restingSandGrains = buildResult.cave.reduce<number>((c, l) => c += l.reduce<number>((c, v) => c += v == symbols.restingSand ? 1 : 0, 0), 0)
 console.log(`There are ${restingSandGrains} units of resting sand when the cave has a floor.`);
 
