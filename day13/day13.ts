@@ -5,7 +5,7 @@ function getDiff(left: any, right: any): number {
     let p2 = right;
     let index = 0;
     let diff = 0;
-    for (index = 0; index < Math.min(p1.length, p2.length); ++index) {
+    for (index = 0; !diff && index < Math.min(p1.length, p2.length); ++index) {
         if (typeof p1[index] !== typeof p2[index]) {
             if (typeof p1[index] === 'object') {
                 p2[index] = [p2[index]];
@@ -18,11 +18,8 @@ function getDiff(left: any, right: any): number {
         } else {
             diff = p1[index] - p2[index];
         }
-        if (diff) {
-            return diff;
-        }
     }
-    return p1.length - p2.length;
+    return diff ? diff : p1.length - p2.length;
 }
 
 function isOrderedCorrectly(left: any, right: any): boolean {
