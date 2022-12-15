@@ -15,5 +15,6 @@ The following puzzles support verbose output:
 - day12
 - day13
 - day14
+- day15 (only with small fields, e.g., the test data)
 
 Have fun! :metal:
