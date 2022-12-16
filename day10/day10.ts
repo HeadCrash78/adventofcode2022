@@ -1,4 +1,5 @@
-import { getInputDataLines } from '../common/helpers';
+import { getInputDataLines } from '../common';
+import { Coordinate, Grid } from '../common/types';
 
 interface Instruction {
     f: (r: number, val?: number) => number,
@@ -16,14 +17,9 @@ function checkSignalStrength() {
     }
 }
 
-interface Position {
-    x: number,
-    y: number
-}
-
 function draw() {
     if (screenPosition.x >= register - 1 && screenPosition.x <= register + 1) {
-        screen[screenPosition.y][screenPosition.x] = '#';
+        screen.mark('#', screenPosition);
     }
     if (++screenPosition.x == screenWidth) {
         ++screenPosition.y;
@@ -37,9 +33,9 @@ let register = 1;
 let initialMeasureCycle = 20;
 let measureCycleInterval = 40;
 let sumOfSignalStrenghts = 0;
-let screenPosition: Position = { x: 0, y: 0 };
+let screenPosition: Coordinate = new Coordinate(0, 0);
 const screenWidth = 40;
-let screen: string[][] = new Array(6).fill(0).map(_ => new Array(screenWidth).fill('.'));
+let screen = new Grid<string>(6, screenWidth, '.');
 
 inputData.forEach(line => {
     let tokens = line.split(/\s+/);
@@ -56,4 +52,4 @@ inputData.forEach(line => {
 checkSignalStrength();
 
 console.log(`The sum of the signal strenghts is ${sumOfSignalStrenghts}.`)
-screen.forEach(line => console.log(line.join('')));
+screen.printToConsole();

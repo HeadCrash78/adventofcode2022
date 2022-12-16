@@ -64,4 +64,4 @@ So, in this example, the number of overlapping assignment pairs is **4**.
 
 ***Your puzzle answer was `919`.***
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+Both parts of this puzzle are complete! They provide two gold stars: :star::star:

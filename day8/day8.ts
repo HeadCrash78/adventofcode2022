@@ -1,4 +1,4 @@
-import { getInputDataLines } from '../common/helpers';
+import { getInputDataLines } from '../common';
 
 function findVisibleTrees(trees: number[][]): number[][] {
     let visibleTrees: number[][] = new Array(trees.length).fill(0).map(_ => new Array(trees[0].length).fill(0))

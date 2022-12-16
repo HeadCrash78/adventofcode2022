@@ -127,4 +127,4 @@ Before the rearrangement process finishes, update your simulation so that the El
 
 ***Your puzzle answer was `PWPWHGFZS`.***
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+Both parts of this puzzle are complete! They provide two gold stars: :star::star:

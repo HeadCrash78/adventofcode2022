@@ -1,4 +1,4 @@
-import { getInputDataAsString } from '../common/helpers';
+import { getInputDataAsString } from '../common';
 
 const inputData = getInputDataAsString();
 let elves: {key: number, calories: number}[] = [];

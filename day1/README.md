@@ -53,4 +53,4 @@ In the example above, the top three Elves are the fourth Elf (with `24000` Calor
 
 ***Your puzzle answer was `200116`.***
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+Both parts of this puzzle are complete! They provide two gold stars: :star::star:

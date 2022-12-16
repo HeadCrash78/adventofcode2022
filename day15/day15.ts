@@ -1,17 +1,12 @@
-import { getInputDataLines, isVerbose } from '../common/helpers';
-import * as fs from 'fs';
-
-interface Position {
-    x: number,
-    y: number
-}
+import { getInputDataLines, isVerbose } from '../common';
+import { Coordinate } from '../common/types';
 
 interface SensorData {
-    sensorPos: Position,
-    beaconPos: Position,
+    sensorPos: Coordinate,
+    beaconPos: Coordinate,
     distance: number,
     // Array with four positions in the order top, right, bottom, left
-    coverageCorners: Position[]
+    coverageCorners: Coordinate[]
 }
 
 class Range {
@@ -206,16 +201,16 @@ drawField(sensorData);
 
 const minRow = 0;
 const maxRow = 4000000;
-let distressBeaconPos: Position | undefined;
+let distressBeaconPos: Coordinate | undefined;
 for (let row = minRow; row <= maxRow; ++row) {
     let ranges = calculateMinAndMaxHorizontalPositionsInRow(sensorData, row).reduce();
     let distressRanges = ranges.removeFrom(new Range(minRow, maxRow)).filter(dr => dr.left == dr.right);
     if (distressRanges.length && distressRanges[0].left == distressRanges[0].right) {
-        distressBeaconPos = { x: distressRanges[0].left, y: row };
+        distressBeaconPos = new Coordinate(distressRanges[0].left, row);
         break;
     }
 }
 if (distressBeaconPos) {
-    console.log(`The distress beacon is at position (${distressBeaconPos.x}, ${distressBeaconPos.y}) with tuning frequency ${distressBeaconPos.x * 4000000 + distressBeaconPos.y}.`);
+    console.log(`The distress beacon is at Coordinate ${distressBeaconPos.toString()} with tuning frequency ${distressBeaconPos.x * 4000000 + distressBeaconPos.y}.`);
 }
 drawField(sensorData, minRow, maxRow);

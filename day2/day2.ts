@@ -1,4 +1,4 @@
-import { getInputDataLines } from '../common/helpers';
+import { getInputDataLines } from '../common';
 
 const choiceScore: { [key: string]: number } = {
     'X': 1,

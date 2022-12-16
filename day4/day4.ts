@@ -1,4 +1,4 @@
-import { getInputDataLines } from '../common/helpers';
+import { getInputDataLines } from '../common';
 
 const inputData = getInputDataLines();
 let fullyContained = 0;

@@ -1,4 +1,4 @@
-import { getInputDataLines } from '../common/helpers';
+import { getInputDataLines } from '../common';
 
 function getItemPrio(item: string): number {
     let charCode = item.charCodeAt(0);

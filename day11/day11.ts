@@ -1,4 +1,4 @@
-import { getInputDataAsString } from '../common/helpers';
+import { getInputDataAsString, RegExps } from '../common';
 
 class Monkey {
     private items: number[];
@@ -10,13 +10,12 @@ class Monkey {
     private inspections = 0;
 
     constructor(monkeyData: string) {
-        const dataRegExp = /\d+/g;
         const data = monkeyData.split('\n');
-        this.items = data[1].match(dataRegExp)!.map(i => Number(i));
+        this.items = data[1].match(RegExps.allNumbers)!.map(i => Number(i));
         this.operation = data[2].substring(this.operationLinePrefixLength).replace(/(new|old)/g, 'item');
-        this.testDivisor = Number(data[3].match(dataRegExp)![0]);
-        this.receivingMonkeyIndexes.push(Number(data[4].match(dataRegExp)![0]));
-        this.receivingMonkeyIndexes.push(Number(data[5].match(dataRegExp)![0]));
+        this.testDivisor = Number(data[3].match(RegExps.allNumbers)![0]);
+        this.receivingMonkeyIndexes.push(Number(data[4].match(RegExps.allNumbers)![0]));
+        this.receivingMonkeyIndexes.push(Number(data[5].match(RegExps.allNumbers)![0]));
     }
 
     public get inspectionCount(): number {

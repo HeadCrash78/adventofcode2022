@@ -1,4 +1,4 @@
-import { getInputDataAsString, isVerbose } from '../common/helpers';
+import { getInputDataAsString, isVerbose } from '../common';
 
 function getDiff(left: any, right: any): number {
     let p1 = left;

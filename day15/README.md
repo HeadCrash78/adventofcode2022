@@ -119,4 +119,4 @@ Find the only possible position for the distress beacon. **What is its tuning fr
 
 ***Your puzzle answer was `12977110973564`.***
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+Both parts of this puzzle are complete! They provide two gold stars: :star::star:

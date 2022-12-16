@@ -1,4 +1,4 @@
-import { getInputDataAsString } from '../common/helpers';
+import { getInputDataAsString } from '../common';
 
 const inputData = getInputDataAsString();
 const startOfPacketMarkerLength = 4;

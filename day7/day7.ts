@@ -1,4 +1,4 @@
-import { getInputDataLines } from '../common/helpers';
+import { getInputDataLines } from '../common';
 
 interface File {
     size: Number

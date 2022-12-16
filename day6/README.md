@@ -49,4 +49,4 @@ Here are the first positions of start-of-message markers for all of the above ex
 
 **Your puzzle answer was `3153`.**
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+Both parts of this puzzle are complete! They provide two gold stars: :star::star:
