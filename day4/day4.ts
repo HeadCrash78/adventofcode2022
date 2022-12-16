@@ -1,18 +1,15 @@
-import { getInputDataLines } from '../common';
+import { getInputDataLines, RegExps } from '../common';
+import { Range } from '../common/types';
 
 const inputData = getInputDataLines();
 let fullyContained = 0;
 let overlap = 0;
 inputData.forEach(line => {
-    let tokens = line.split(/[-,]/);
-    let e1Start = Number(tokens[0]);
-    let e1End = Number(tokens[1]);
-    let e2Start = Number(tokens[2]);
-    let e2End = Number(tokens[3]);
-    fullyContained += e1Start == e2Start || e1End == e2End
-        || e1Start < e2Start && e2End < e1End
-        || e2Start < e1Start && e1End < e2End ? 1 : 0;
-    overlap += Math.max(e1Start, e2Start) <= Math.min(e1End, e2End) ? 1 : 0;
+    let values = line.match(RegExps.allPositiveNumbers)!;
+    let elve1 = new Range(values[0], values[1]);
+    let elve2 = new Range(values[2], values[3]);
+    fullyContained += elve1.contains(elve2) || elve2.contains(elve1) ? 1 : 0;
+    overlap += elve1.overlaps(elve2) ? 1 : 0;
 });
 console.log(`There are ${fullyContained} fully contained segments.`);
 console.log(`There are ${overlap} overlapping segments.`);

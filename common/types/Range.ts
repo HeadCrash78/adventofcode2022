@@ -2,9 +2,9 @@ export class Range {
     left: number;
     right: number;
 
-    constructor(left: number, right: number) {
-        this.left = left;
-        this.right = right;
+    constructor(left: string | number, right: string | number) {
+        this.left = Number(left);
+        this.right = Number(right);
     }
 
     contains(r: Range): boolean {
