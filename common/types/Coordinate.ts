@@ -128,4 +128,16 @@ export class Coordinate {
     public equals(coord: Coordinate) {
         return this.x == coord.x && this.y == coord.y;
     }
+
+    public horizontalDistanceTo(coord: Coordinate): number {
+        return Math.abs(this.x - coord.x);
+    }
+
+    public verticalDistanceTo(coord: Coordinate): number {
+        return Math.abs(this.y - coord.y);
+    }
+
+    public manhattanDistanceTo(coord: Coordinate): number {
+        return Math.abs(this.x - coord.x) + Math.abs(this.y - coord.y);
+    }
 }
