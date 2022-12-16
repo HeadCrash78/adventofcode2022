@@ -1,50 +1,5 @@
-import { getInputDataLines, isVerbose } from '../common/helpers';
-
-class Position {
-    x: number;
-    y: number;
-
-    constructor(x: string | number, y: string | number) {
-        this.x = Number(x);
-        this.y = Number(y);
-    }
-
-    public clone() {
-        return new Position(this.x, this.y);
-    }
-
-    public minimize(pos: Position) {
-        if (pos.x < this.x) {
-            this.x = pos.x;
-        }
-        if (pos.y < this.y) {
-            this.y = pos.y;
-        }
-    }
-
-    public maximize(pos: Position) {
-        if (pos.x > this.x) {
-            this.x = pos.x;
-        }
-        if (pos.y > this.y) {
-            this.y = pos.y;
-        }
-    }
-
-    public moveDown() {
-        ++this.y;
-    }
-
-    public moveDownLeft() {
-        ++this.y;
-        --this.x;
-    }
-
-    public moveDownRight() {
-        ++this.y;
-        ++this.x;
-    }
-}
+import { getInputDataLines, isVerbose, RegExps } from '../common';
+import { Coordinate, Grid } from '../common/types';
 
 const symbols = {
     air: '.',
@@ -53,36 +8,33 @@ const symbols = {
     restingSand: 'o',
     freeFallingSand: '~'
 }
-const blockingSymbols = [ symbols.restingSand, symbols.rock ];
+const blockingSymbols = new Set([ symbols.restingSand, symbols.rock ]);
 
-function drawRock(cave: string[][], lines: Position[][], xOffset: number) {
-    let startPos: Position | undefined;
-    let endPos: Position | undefined;
+function drawRock(cave: Grid<string>, lines: Coordinate[][], xOffset: number) {
+    let offset = new Coordinate(xOffset, 0);
     lines.forEach(line => {
-        startPos = line[0];
+        let startPos = line[0].moveBy(offset);
         for (let i = 1; i <= line.length - 1; ++i) {
-            endPos = line[i];
-            let xMove = startPos.x < endPos.x ? 1 : -1;
-            let yMove = startPos.y < endPos.y ? 1 : -1;
-            for (let x = startPos.x - xOffset; xMove > 0 && x <= endPos.x - xOffset || xMove < 0 && x >= endPos.x - xOffset; x += xMove) {
-                for (let y = startPos.y; yMove > 0 && y <= endPos.y || yMove < 0 && y >= endPos.y; y += yMove) {
-                    cave[y][x] = symbols.rock;
-                }
-            }
+            let endPos = line[i].moveBy(offset);
+            let moveBy = new Coordinate(startPos.x < endPos.x ? 1 : startPos.x > endPos.x ? -1 : 0, startPos.y < endPos.y ? 1 : startPos.y > endPos.y ? -1 : 0);
+            do {
+                cave.mark(symbols.rock, startPos);
+            } while (!startPos.moveBy(moveBy).equals(endPos));
+            cave.mark(symbols.rock, startPos);
             startPos = endPos;
         }
     });
 }
 
-function buildCave(inputData: string[], withFloor: boolean = false): { cave: string[][], sandSource: Position } {
-    let lines: Position[][] = [];
-    let minCoordinate: Position = new Position(Number.MAX_VALUE, 0);
-    let maxCoordinate: Position = new Position(0, 0);
+function buildCave(inputData: string[], withFloor: boolean = false): { cave: Grid<string>, sandSource: Coordinate } {
+    let lines: Coordinate[][] = [];
+    let minCoordinate = new Coordinate(Number.POSITIVE_INFINITY, 0);
+    let maxCoordinate = new Coordinate(0, 0);
     inputData.forEach(line => {
-        let coordinates: Position[] = []
-        let values = line.match(/\d+/g)!
+        let coordinates: Coordinate[] = []
+        let values = line.match(RegExps.allPositiveNumbers)!
         for (let ci = 0; ci < values.length - 1; ci += 2) {
-            let coordinate: Position = new Position(values[ci], values[ci + 1]);
+            let coordinate = new Coordinate(values[ci], values[ci + 1]);
             minCoordinate.minimize(coordinate);
             maxCoordinate.maximize(coordinate);
             coordinates.push(coordinate);
@@ -90,61 +42,45 @@ function buildCave(inputData: string[], withFloor: boolean = false): { cave: str
         lines.push(coordinates);
     });
 
-    let cave: string[][];
     // We're adding 3 instead of 1 to get cave edges where sand can fall down
     let caveWidth = maxCoordinate.x - minCoordinate.x + 3;
+    // We're adding two more levels to the cave so we can draw free falling sand
+    let caveHeight = maxCoordinate.y + 3;
     // Offset needs to include the left edge as well
-    let xOffset = minCoordinate.x - 1;
+    let xOffset = (minCoordinate.x - 1) * -1;
     if (withFloor) {
         // The floor is always two levels lower than the lowest rock formation
-        lines.push([new Position(0 + xOffset, maxCoordinate.y + 2), new Position(caveWidth - 1 + xOffset, maxCoordinate.y + 2)]);
-        cave = new Array(maxCoordinate.y + 3).fill(0).map(_ => new Array(caveWidth).fill(symbols.air));
-    } else {
-        // We also add three extra lines to draw free falling sand
-        cave = new Array(maxCoordinate.y + 4).fill(0).map(_ => new Array(caveWidth).fill(symbols.air));
+        lines.push([new Coordinate(0 - xOffset, maxCoordinate.y + 2), new Coordinate(caveWidth - 1 - xOffset, maxCoordinate.y + 2)]);
     }
-    drawRock(cave!, lines, xOffset);
-    let sandSource = new Position(500 - xOffset, 0);
-    cave[sandSource.y][sandSource.x] = symbols.sandSource;
+    let cave = new Grid<string>(caveHeight, caveWidth, symbols.air);
+    drawRock(cave, lines, xOffset);
+    let sandSource = new Coordinate(500 + xOffset, 0);
+    cave.mark(symbols.sandSource, sandSource);
 
-    return { cave: cave!, sandSource: sandSource };
+    return { cave: cave, sandSource: sandSource };
 }
 
-function extendCaveLeft(cave: string[][]) {
-    cave.forEach(l => {
-        l.splice(0, 0, symbols.air)
-    });
-    cave[cave.length - 1][0] = symbols.rock;
-}
-
-function extendCaveRight(cave: string[][]) {
-    cave.forEach(l => {
-        l.splice(l.length, 0, symbols.air)
-    });
-    cave[cave.length - 1][cave[0].length - 1] = symbols.rock;
-}
-
-function moveGrainOfSand(cave: string[][], sandPosition: Position, withFloor: boolean = false): { moved: boolean, movePositionsBy: number } {
+function moveGrainOfSand(cave: Grid<string>, sandPosition: Coordinate, withFloor: boolean = false): { moved: boolean, movePositionsBy: number } {
     let newY = sandPosition.y + 1;
     let movePositionsBy = 0;
-    if (newY < cave.length) {
-        if (blockingSymbols.indexOf(cave[newY][sandPosition.x]) < 0) {
+    if (newY < cave.height) {
+        if (!blockingSymbols.has(cave.get(sandPosition.x, newY)!)) {
             sandPosition.moveDown();
             return { moved: true, movePositionsBy: movePositionsBy };
         }
-        if (sandPosition.x >= 0 && blockingSymbols.indexOf(cave[newY][sandPosition.x - 1]) < 0) {
+        if (sandPosition.x >= 0 && !blockingSymbols.has(cave.get(sandPosition.x - 1, newY)!)) {
             sandPosition.moveDownLeft();
             if (withFloor && sandPosition.x == 0) {
-                extendCaveLeft(cave);
+                cave.extendLeft(1, symbols.air).mark(symbols.rock, 0, cave.height - 1);
                 ++sandPosition.x;
                 movePositionsBy = 1;
             }
             return { moved: true, movePositionsBy: movePositionsBy };
         }
-        if (sandPosition.x < cave[0].length && blockingSymbols.indexOf(cave[newY][sandPosition.x + 1]) < 0) {
+        if (sandPosition.x < cave.width && !blockingSymbols.has(cave.get(sandPosition.x + 1, newY)!)) {
             sandPosition.moveDownRight();
-            if (withFloor && sandPosition.x == cave[0].length - 1) {
-                extendCaveRight(cave);
+            if (withFloor && sandPosition.x == cave.width - 1) {
+                cave.extendRight(1, symbols.air).mark(symbols.rock, cave.width - 1, cave.height - 1);
             }
             return { moved: true, movePositionsBy: movePositionsBy };
         }
@@ -152,14 +88,14 @@ function moveGrainOfSand(cave: string[][], sandPosition: Position, withFloor: bo
     return { moved: false, movePositionsBy: movePositionsBy };
 }
 
-function isOnCaveEdgeOrCaveFull(cave: string[][], sandPosition: Position, withFloor: boolean = false): boolean {
-    return sandPosition.x == 0 || sandPosition.x == cave[0].length - 1
-        || !withFloor && sandPosition.y == cave.length - 1
-        || withFloor && sandPosition.y == 0 && cave[sandPosition.y][sandPosition.x] == symbols.restingSand;
+function isOnCaveEdgeOrCaveFull(cave: Grid<string>, sandPosition: Coordinate, withFloor: boolean = false): boolean {
+    return sandPosition.x == 0 || sandPosition.x == cave.width - 1
+        || !withFloor && sandPosition.y == cave.height - 1
+        || withFloor && sandPosition.y == 0 && cave.get(sandPosition) == symbols.restingSand;
 }
 
-function pourSand(cave: string[][], sandSource: Position, withFloor: boolean = false) {
-    let sandPosition: Position;
+function pourSand(cave: Grid<string>, sandSource: Coordinate, withFloor: boolean = false) {
+    let sandPosition: Coordinate;
     do {
         sandPosition = sandSource.clone();
         let move;
@@ -167,22 +103,22 @@ function pourSand(cave: string[][], sandSource: Position, withFloor: boolean = f
             sandSource.x += move.movePositionsBy;
         }
         if (!isOnCaveEdgeOrCaveFull(cave, sandPosition, withFloor)) {
-            cave[sandPosition.y][sandPosition.x] = symbols.restingSand;
+            cave.mark(symbols.restingSand, sandPosition);
         } else {
             // Add free falling sand
             sandPosition = sandSource.clone();
             while ((move = moveGrainOfSand(cave, sandPosition, withFloor)).moved) {
-                cave[sandPosition.y][sandPosition.x] = symbols.freeFallingSand;
+                cave.mark(symbols.freeFallingSand, sandPosition);
             }
-            cave[sandPosition.y][sandPosition.x] = symbols.freeFallingSand;
+            cave.mark(symbols.freeFallingSand, sandPosition);
         }
     } while (!isOnCaveEdgeOrCaveFull(cave, sandPosition, withFloor));
 }
 
-function drawCave(cave: string[][]) {
+function drawCave(cave: Grid<string>) {
     if (isVerbose()) {
         console.log();
-        cave.forEach(line => console.log(line.join('')));
+        cave.printToConsole();
         console.log();
     }
 }
@@ -191,13 +127,13 @@ const inputData = getInputDataLines();
 let buildResult = buildCave(inputData);
 pourSand(buildResult.cave, buildResult.sandSource);
 drawCave(buildResult.cave);
-let restingSandGrains = buildResult.cave.reduce<number>((c, l) => c += l.reduce<number>((c, v) => c += v == symbols.restingSand ? 1 : 0, 0), 0)
+let restingSandGrains = buildResult.cave.getMarkedPositionCount(symbols.restingSand);
 console.log(`There are ${restingSandGrains} units of resting sand.`);
 
 // Part 2
 buildResult = buildCave(inputData, true);
 pourSand(buildResult.cave, buildResult.sandSource, true);
 drawCave(buildResult.cave);
-restingSandGrains = buildResult.cave.reduce<number>((c, l) => c += l.reduce<number>((c, v) => c += v == symbols.restingSand ? 1 : 0, 0), 0)
+restingSandGrains = buildResult.cave.getMarkedPositionCount(symbols.restingSand);
 console.log(`There are ${restingSandGrains} units of resting sand when the cave has a floor.`);
 
